@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard IoT Monitoring</title>
+
+  <!-- Leaflet (Map) -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      text-align: center;
+    }
+
+    h1 {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      margin: 0;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px auto;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    #suhu {
+      font-size: 30px;
+      color: #e74c3c;
+      font-weight: bold;
+    }
+
+    #map {
+      height: 350px;
+      border-radius: 10px;
+    }
+
+    iframe {
+      border-radius: 10px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+<h1>Monitoring IoT (Suhu & Lokasi)</h1>
+
+<div class="container">
+
+  <!-- Suhu -->
+
+  <div class="card">
+    <h2>Suhu Saat Ini</h2>
+    <div id="suhu">Loading...</div>
+  </div>
+
+  <!-- Map -->
+
+  <div class="card">
+    <h2>Lokasi GPS</h2>
+    <div id="map"></div>
+  </div>
+
+  <!-- Grafik -->
+
+  <div class="card">
+    <h2>Grafik Suhu</h2>
+    <iframe width="100%" height="260"
+    src="https://thingspeak.com/channels/3330727/charts/1?bgcolor=%23ffffff&color=%23ff0000&dynamic=true">
+    </iframe>
+  </div>
+
+</div>
+
+<script>
+const channelID = "3330727";
+
+// Map awal
+let map = L.map('map').setView([-2.99, 104.75], 13);
+
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+let marker = L.marker([-2.99, 104.75]).addTo(map);
+
+// Ambil data
+function ambilData() {
+  fetch(`https://api.thingspeak.com/channels/${channelID}/feeds/last.json`)
+    .then(res => res.json())
+    .then(data => {
+
+      // Suhu
+      let suhu = data.field1;
+      document.getElementById("suhu").innerHTML =
+        suhu + " °C";
+
+      // GPS
+      let lat = parseFloat(data.field2);
+      let lng = parseFloat(data.field3);
+
+      if (!isNaN(lat) && !isNaN(lng)) {
+        marker.setLatLng([lat, lng]);
+        map.setView([lat, lng], 15);
+      }
+
+    })
+    .catch(err => {
+      console.log("Error:", err);
+    });
+}
+
+// Update tiap 10 detik
+setInterval(ambilData, 10000);
+
+// Load pertama
+ambilData();
+</script>
+
+</body>
+</html>
