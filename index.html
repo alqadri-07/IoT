@@ -82,7 +82,7 @@
   <div class="card">
     <h2>Grafik Suhu</h2>
     <iframe width="100%" height="260"
-    src="https://thingspeak.com/channels/3330727/charts/1?api_key=V13NRUHCVAQEJQRG&bgcolor=%23ffffff&color=%23ff0000&dynamic=true">
+    src="https://thingspeak.com/channels/3330727/charts/1?api_key=TZ50G0R2N1M6XY0V&bgcolor=%23ffffff&color=%23ff0000&dynamic=true">
     </iframe>
   </div>
 
@@ -100,7 +100,7 @@ let marker = L.marker([-2.99, 104.75]).addTo(map);
 
 // Ambil data
 function ambilData() {
-  fetch(`https://api.thingspeak.com/channels/3330727/feeds/last.json?api_key=V13NRUHCVAQEJQRG`)
+  fetch(`https://api.thingspeak.com/channels/3330727/feeds/last.json?api_key=TZ50G0R2N1M6XY0V`)
     .then(res => res.json())
     .then(data => {
 
